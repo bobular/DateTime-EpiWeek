@@ -1,0 +1,23 @@
+Perl implementation of date to epidemiological week number converter.
+
+To install:
+
+
+Install Module::Build if required
+
+  sudo apt install libmodule-build-perl
+
+
+perl Build.PL
+./Build
+./Build test
+./Build install
+
+perldoc DateTime::EpiWeek
+
+
+
+To start again from scratch
+
+./Build distclean
+
