@@ -48,6 +48,7 @@ Any days in Epi Week 53 "twilight zone" are assigned to week 52.
 =cut
 
 use DateTime;
+use POSIX qw/floor/;
 
 # We want to add a new method for all DateTime objects
 # and this seems to do it.
@@ -71,7 +72,7 @@ sub epiweek {
   }
 
   my $is_leap = $self->is_leap_year;
-  my $epi_week = floor(($self->day_of_year-$epiweek2_start_day_of_year)/7) + 2;
+  my $epi_week = POSIX::floor(($self->day_of_year-$epiweek2_start_day_of_year)/7) + 2;
   if ($epi_week == 53) {
     if ($epiweek2_start_day_of_year == 5 ||
        ($is_leap && $epiweek2_start_day_of_year == 6)) {
