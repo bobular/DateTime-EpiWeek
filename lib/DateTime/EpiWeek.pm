@@ -57,38 +57,52 @@ package DateTime;
 
 sub epiweek {
   my $self = shift;
-  my ($epi_year, $epi_week) = ("n/a", "n/a");
-  my $orig_year = $self->year;
 
   # first find out the beginning Sunday of epiweek 2 for this year
-  my $epiweek2_start_day_of_year;
   my $i = 4;
-  while (not defined $epiweek2_start_day_of_year) {
-    my $dt = DateTime->new(year=>$orig_year, month=>1, day=>$i);
-    if ($dt->day_of_week == 6) { # Saturday
-      $epiweek2_start_day_of_year = $i+1; # the Sunday after
-    }
-    $i++;
+  my $epiweek2_day;
+  my $orig_year = $self->year;
+
+  until (defined $epiweek2_day) {
+    my $today = new DateTime(
+      day   => $i++,
+      month => 1,
+      year  => $orig_year,
+    )->day_of_week;
+
+    # Sets the next day (Sunday) if 'today' pointer is Saturday
+    $epiweek2_day = $i if $today == 6;
   }
 
-  my $is_leap = $self->is_leap_year;
-  my $epi_week = POSIX::floor(($self->day_of_year-$epiweek2_start_day_of_year)/7) + 2;
+  my ($epi_year, $epi_week) = ('n/a', 'n/a');
+  {
+    my $day_of_year   = $self->day_of_year;
+    my $days_from     = $day_of_year - $epiweek2_day;
+    my $weeks_from    = $days_from / 7;
+    my $real_epi_week = $weeks_from + 2;
+
+    $epi_week = POSIX::floor $real_epi_week;
+  }
+  $epi_year = $orig_year;
+
   if ($epi_week == 53) {
-    if ($epiweek2_start_day_of_year == 5 ||
-       ($is_leap && $epiweek2_start_day_of_year == 6)) {
+    
+    if (
+      $epiweek2_day == 5 ||
+      $self->is_leap_year && $epiweek2_day == 6
+    ) {
       # handle "missing week 53" as 52
-      $epi_year = $orig_year;
       $epi_week = 52;
     } else {
-      $epi_year = $orig_year + 1;
+      $epi_year++;
       $epi_week = 1;
     }
+
   } elsif ($epi_week == 0) {
-    $epi_year = $orig_year - 1;
+    $epi_year--;
     $epi_week = 52;
-  } else {
-    $epi_year = $orig_year;
   }
+  
   return ($epi_year, $epi_week);
 }
 
