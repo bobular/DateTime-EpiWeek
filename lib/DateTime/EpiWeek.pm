@@ -48,12 +48,12 @@ Any days in Epi Week 53 "twilight zone" are assigned to week 52.
 =cut
 
 use DateTime;
-use Math::Utils 'floor';
 
 # We want to add a new method for all DateTime objects
 # and this seems to do it.
 package DateTime;
 
+use Math::Utils 'floor';
 
 sub epiweek {
   my $self = shift;
